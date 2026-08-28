@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>替代 CAD 產品測試報告（AutoCAD vs 浩辰 vs 中望）</title>
+<style>
+  :root {
+    --bg: #0f172a; --bg2: #1e293b; --card: #ffffff;
+    --accent: #38bdf8; --gold: #fbbf24; --green: #34d399; --red: #f87171;
+    --text: #e2e8f0; --dark: #1e293b; --muted: #94a3b8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: radial-gradient(1200px 800px at 20% 10%, #1e3a5f, var(--bg) 60%);
+    color: var(--text); overflow:hidden;
+  }
+  .deck { width:100%; height:100%; position:relative; }
+  .slide {
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    justify-content:center; padding:5vh 7vw; opacity:0; pointer-events:none;
+    transition:opacity .5s ease; overflow-y:auto;
+  }
+  .slide.active { opacity:1; pointer-events:auto; }
+  h1 { font-size:3.2rem; line-height:1.25; color:#fff; }
+  h2 { font-size:2.2rem; color:var(--accent); margin-bottom:.6em; border-left:6px solid var(--accent); padding-left:.5em; }
+  h3 { font-size:1.35rem; color:var(--gold); margin:.6em 0 .3em; }
+  p  { font-size:1.1rem; line-height:1.7; color:var(--text); }
+  .sub { color:var(--muted); font-size:1rem; }
+  table { width:100%; border-collapse:collapse; margin:.8em 0; font-size:.95rem; background:rgba(255,255,255,.04); border-radius:8px; overflow:hidden; }
+  th { background:rgba(56,189,248,.18); color:#fff; padding:.6em .8em; text-align:left; font-weight:600; }
+  td { padding:.55em .8em; border-top:1px solid rgba(255,255,255,.08); }
+  tr:hover td { background:rgba(255,255,255,.04); }
+  .ok { color:var(--green); font-weight:700; }
+  .bad { color:var(--red); font-weight:700; }
+  .warn { color:var(--gold); font-weight:600; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:1.2em; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1.2em; }
+  .card { background:var(--card); color:var(--dark); border-radius:12px; padding:1.1em 1.2em; box-shadow:0 8px 24px rgba(0,0,0,.35); }
+  .card h4 { font-size:1.05rem; margin-bottom:.4em; }
+  .card p { font-size:.95rem; color:#334155; }
+  .card .tag { display:inline-block; font-size:.8rem; padding:.15em .7em; border-radius:99px; margin-right:.4em; }
+  .tag-a { background:#dbeafe; color:#1d4ed8; }
+  .tag-z { background:#fef3c7; color:#b45309; }
+  .tag-g { background:#d1fae5; color:#047857; }
+  .big { font-size:2.6rem; font-weight:800; }
+  .big .unit { font-size:1.1rem; font-weight:400; color:var(--muted); }
+  .quote { border-left:4px solid var(--gold); background:rgba(251,191,36,.08); padding:.8em 1.2em; border-radius:0 8px 8px 0; margin:.6em 0; }
+  .verdict { background:linear-gradient(135deg, rgba(52,211,153,.18), rgba(56,189,248,.12)); border:1px solid rgba(52,211,153,.4); border-radius:12px; padding:1.2em 1.4em; }
+  .footer { position:absolute; bottom:1.2em; right:2em; color:var(--muted); font-size:.85rem; }
+  .nav { position:absolute; bottom:1.2em; left:2em; color:var(--muted); font-size:.85rem; }
+  .pager { position:absolute; top:1.2em; right:2em; color:var(--muted); font-size:.9rem; }
+  .kbd { border:1px solid var(--muted); border-radius:4px; padding:0 .4em; font-size:.8rem; }
+  .mini { font-size:.85rem; color:var(--muted); }
+  .btnbar { position:absolute; bottom:1.1em; left:50%; transform:translateX(-50%); display:flex; gap:.8em; z-index:10; }
+  .navbtn {
+    background:rgba(30,41,59,.85); color:#e2e8f0; border:1px solid rgba(148,163,184,.4);
+    border-radius:99px; padding:.45em 1.3em; font-size:.95rem; cursor:pointer;
+    font-family:inherit; transition:all .2s; backdrop-filter:blur(4px);
+  }
+  .navbtn:hover { background:rgba(56,189,248,.25); border-color:var(--accent); }
+  .navbtn:active { transform:scale(.96); }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ============ 1 封面 ============ -->
+<section class="slide">
+  <h1>替代 CAD 產品測試報告</h1>
+  <p style="font-size:1.6rem;color:var(--accent);margin:.4em 0 1.4em;">AutoCAD 2025 &nbsp;·&nbsp; 浩辰 CAD 2026 &nbsp;·&nbsp; 中望 ZWCAD 2026</p>
+  <p class="sub">測試類型：自動化四維實測（數據層 / 渲染層 / PDF 格式 / 動態塊）<br>
+  測試圖紙：33 張真實顧問圖紙（0.2~52 MB，含 xref 重載大圖、linkview、SK 系列）<br>
+  報告日期：2026-08-28 ｜ 測試程序：CADTest（Python + COM 驅動）</p>
+  <div class="footer">替代 CAD 選型 · 機電工程公司 · 內部圖紙深化場景</div>
+</section>
+
+<!-- ============ 2 背景與目的 ============ -->
+<section class="slide">
+  <h2>背景與測試目的</h2>
+  <p><b>公司場景</b>：接收顧問公司 RVT/DWG 做施工改造與深化圖紙，<b>內部使用、不回傳設計院</b>。</p>
+  <p><b>選型動因</b>：兩款國產 CAD 永久授權價格低於 Autodesk 一年訂閱，且被多名同事試用認可。</p>
+  <div class="grid2" style="margin-top:1.2em;">
+    <div class="card"><h4>🎯 測試目標</h4><p>用自動化程序客觀量化三款 CAD 的 DWG 讀取保真、修改回存、性能與渲染，爲選型提供數據支撐。</p></div>
+    <div class="card"><h4>🧪 測試範圍</h4><p>33 張真實顧問圖紙 × 3 款 CAD，覆蓋：打開成功率、實體完整性、字體、回存無損、REGEN/ZOOM、打印渲染、動態塊解析。</p></div>
+    <div class="card"><h4>👥 同事反饋</h4><p>5 名工程師（電氣/機電/水暖）+ 項目發起人的試用反饋郵件鏈（2026-07~08），作爲人工側驗證基準。</p></div>
+    <div class="card"><h4>⚙️ 測試工具</h4><p>CADTest 自動化框架：COM 驅動三款 CAD，LISP 進程內統計，PDF 打印 + 圖像差異分析，斷點續跑 + 韌性運行器。</p></div>
+  </div>
+</section>
+
+<!-- ============ 3 同事反饋彙總 ============ -->
+<section class="slide">
+  <h2>同事測試反饋彙總（人工側）</h2>
+  <p class="sub">5 名工程師在試用後逐項填寫反饋表（"Identical"=與 AutoCAD 相同）</p>
+  <table>
+    <tr><th>維度</th><th>AutoCAD</th><th>中望 ZWCAD</th><th>浩辰 GstarCAD</th></tr>
+    <tr><td>UI 界面</td><td>行業標準</td><td class="warn">Blur 模糊（Michael）</td><td>Identical（圖標更易讀，PF Wong）</td></tr>
+    <tr><td>穩定性</td><td class="bad">多塊/xref 插入慢、大圖自動保存凍結 1-3s</td><td>Xref 平滑（Joseph）；大圖處理≈ACAD（Lokman）</td><td class="ok">Fast（Murphy）；複雜線流暢、內存佔用低（Joseph）</td></tr>
+    <tr><td>字體顯示</td><td>正常</td><td class="bad">部分樣式無法顯示（Michael）</td><td class="ok">正常</td></tr>
+    <tr><td>性能（CPU/開圖）</td><td>CPU ~9%</td><td>CPU ~8%；pdf 插入圖顯示快</td><td class="warn">CPU 12-14%；開圖/縮放偏慢（PF Wong，i7 64GB）</td></tr>
+    <tr><td>打印 & E-Transmit</td><td class="bad">慢（Michael）</td><td class="warn">CTB 預設少（Joseph）</td><td class="ok">正常</td></tr>
+    <tr><td>語言包</td><td>-</td><td class="warn">簡體中文（團隊難用，換語言包需管理員）</td><td class="warn">繁體中文</td></tr>
+    <tr><td>插件/生態</td><td>天正等成熟生態</td><td>建築/MEP/機械；更適製造業</td><td>建築/MEP；更適合建築行業（PF Wong）</td></tr>
+    <tr><td>命令兼容</td><td>-</td><td>Identical（可用 AutoCAD LSP）</td><td>Identical</td></tr>
+  </table>
+  <p class="mini">備註：中望可語音留言；AutoCAD 配套 DWG TrueView 查看器，浩辰配套"浩辰CAD看圖王"。</p>
+</section>
+
+<!-- ============ 4 自動化實測：數據層 ============ -->
+<section class="slide">
+  <h2>自動化實測 ① 數據層（打開 / 實體 / 回存 / 性能）</h2>
+  <table>
+    <tr><th>指標</th><th>AutoCAD 2025</th><th>浩辰 2026</th><th>中望 2026</th></tr>
+    <tr><td>打開成功率（33 圖）</td><td>33/33（100%）</td><td class="ok">33/33（100%）</td><td class="bad">29/33（87.9%）</td></tr>
+    <tr><td>回存無損率（改→存→重開）</td><td class="bad">19/33（58%）</td><td class="ok"><b>33/33（100%）</b></td><td class="bad">20/29（69%）</td></tr>
+    <tr><td>實體統計與基線一致</td><td>基線</td><td class="ok">100% 逐張精確一致</td><td>成功者 100% 一致</td></tr>
+    <tr><td>打開性能（秒/MB）</td><td>0.93</td><td class="ok"><b>0.49</b></td><td class="bad">28.95（波動極大）</td></tr>
+    <tr><td>REGEN / ZOOM（秒）</td><td>0.94 / 0.94</td><td class="ok"><b>0.14 / 0.47</b></td><td>0.66 / 1.23</td></tr>
+    <tr><td>代理實體（天正類）</td><td>0</td><td>0</td><td>0</td></tr>
+  </table>
+  <div class="grid3" style="margin-top:.8em;">
+    <div class="card"><p class="big">100%<span class="unit"> 回存無損</span></p><h4 style="margin-top:.4em;">浩辰 33/33 全綠</h4></div>
+    <div class="card"><p class="big">58%<span class="unit"> AutoCAD 回存</span></p><h4 style="margin-top:.4em;">大圖/xref 圖 COM 崩潰</h4></div>
+    <div class="card"><p class="big">0.49<span class="unit"> 秒/MB</span></p><h4 style="margin-top:.4em;">浩辰打開性能最快</h4></div>
+  </div>
+</section>
+
+<!-- ============ 5 自動化實測：渲染 + PDF ============ -->
+<section class="slide">
+  <h2>自動化實測 ② 渲染保真 ③ PDF 內容格式</h2>
+  <p><b>渲染對比</b>（ZOOM Extents → 打印 PDF → PNG → 與 AutoCAD 基線圖像 diff，越小越接近）：</p>
+  <table>
+    <tr><th>指標</th><th>AutoCAD（基線）</th><th>浩辰 2026</th><th>中望 2026</th></tr>
+    <tr><td>打印成功率</td><td>31/32</td><td class="ok">32/32</td><td class="ok">32/32</td></tr>
+    <tr><td>平均打印耗時</td><td>32 秒/張</td><td class="ok"><b>3 秒/張</b></td><td>10 秒/張</td></tr>
+    <tr><td>與基線平均 diff</td><td>—</td><td class="ok"><b>3.45%</b></td><td>3.62%</td></tr>
+    <tr><td>diff&lt;3%（一致）張數</td><td>—</td><td class="ok">13/31</td><td>13/31</td></tr>
+  </table>
+  <p class="mini">小圖（樓層平面）diff 僅 0.02%~1.6%，近乎像素級一致；差異來自字體/填充/線寬渲染，無"灰豆腐"級缺陷。</p>
+  <p style="margin-top:1em;"><b>PDF 內容格式</b>：三款預設均輸出<b>矢量 PDF</b>（縮放無損、可搜索）、保留圖層；AutoCAD 額外支持"強制整體轉光柵"開關（浩辰/中望無，需走 JPG/PNG 虛擬繪圖儀——非日常需求）。</p>
+</section>
+
+<!-- ============ 6 自動化實測：動態塊 ============ -->
+<section class="slide">
+  <h2>自動化實測 ④ 動態塊解析（三款交叉驗證）</h2>
+  <table>
+    <tr><th>圖紙</th><th>AutoCAD</th><th>浩辰</th><th>中望</th><th>判定</th></tr>
+    <tr><td>GF_Editing（主圖）</td><td>25 定義 / 5,447 實例</td><td>25 / 5,447</td><td>25 / 5,447</td><td class="ok">完全一致</td></tr>
+    <tr><td>AWE2-GF 平面圖</td><td>0 / 3,835</td><td>0 / 3,835</td><td>0 / 3,835</td><td class="ok">完全一致</td></tr>
+    <tr><td>BF 圖</td><td class="warn">87 定義 / 2,373</td><td>88 / 2,373</td><td>88 / 2,373</td><td class="warn">定義差 1（&lt;1.2%）</td></tr>
+    <tr><td>Title block</td><td>1 / 1</td><td>1 / 1</td><td>1 / 1</td><td class="ok">完全一致</td></tr>
+  </table>
+  <div class="quote">
+    <p><b>16 張三款動態塊解析完全一致</b>（含全部動態塊富集圖）。官方"浩辰動態塊大部分不能用"的說法在<b>文件解析層未復現</b>；唯一差異爲 BF 圖 1 個塊定義的參數判定（國產兩款一致），實例數 100% 吻合。</p>
+  </div>
+</section>
+
+<!-- ============ 7 同事反饋 vs 自動化實測對照 ============ -->
+<section class="slide">
+  <h2>同事反饋 vs 自動化實測 · 逐項對照</h2>
+  <table>
+    <tr><th>同事反饋</th><th>自動化實測</th><th>判定</th></tr>
+    <tr><td>Michael：中望字體樣式顯示不全</td><td>中望額外缺失 romans.shx / isocp.shx</td><td class="ok">✅ 證實</td></tr>
+    <tr><td>Murphy：浩辰穩定性 Fast</td><td>浩辰 33/33 打開 + 回存零崩潰</td><td class="ok">✅ 證實</td></tr>
+    <tr><td>Joseph：浩辰複雜線流暢</td><td>浩辰大圖 REGEN 0.14s（AutoCAD 0.94s）</td><td class="ok">✅ 證實</td></tr>
+    <tr><td>Joseph：中望 Xref 平滑</td><td>中望 linkview 回存 5/6（AutoCAD 0/6）</td><td class="ok">✅ 證實</td></tr>
+    <tr><td>Michael：AutoCAD 多塊/xref 插入慢</td><td>AutoCAD 大圖 REGEN 5~6s（浩辰 &lt;0.4s）</td><td class="ok">✅ 證實</td></tr>
+    <tr><td>PF Wong：浩辰打開/縮放慢、CPU 高</td><td>浩辰打開最快（0.49 秒/MB）、ZOOM 最快</td><td class="warn">⚠️ 未復現（疑基於舊版本）</td></tr>
+    <tr><td>Joseph：AutoCAD 大圖自動保存凍結</td><td>未直接測；REGEN 慢方向一致</td><td class="warn">⚠️ 部分證實</td></tr>
+    <tr><td>Joseph：中望 CTB 預設少</td><td>打印配置預設數量差異（General/High Quality/Smallest File）</td><td class="warn">⚠️ 待人工確認</td></tr>
+    <tr><td>SKWan / 各人：命令與文件兼容 Identical</td><td>實體/字體/命令層一致性高，中望實體逐張精確一致</td><td class="ok">✅ 大體證實</td></tr>
+    <tr><td>中望 UI Blur / 語言包（簡體）</td><td>UI 層無法自動化</td><td class="warn">保留人工項</td></tr>
+  </table>
+</section>
+
+<!-- ============ 8 結論與選型建議 ============ -->
+<section class="slide">
+  <h2>結論與選型建議</h2>
+  <div class="verdict">
+    <h3 style="color:var(--green);">推薦選型：浩辰 CAD 2026</h3>
+    <p style="margin-top:.4em;">在全部可量化維度<b>無短板、多項領先</b>：打開 100%、回存唯一全綠（100%）、
+    打開/REGEN/ZOOM/打印性能全面最快（打印 3 秒/張，AutoCAD 的 10 倍）、渲染保真與中望持平且接近 AutoCAD、
+    矢量 PDF 達標、動態塊解析與 AutoCAD 基線高度吻合（16 張三款一致）。</p>
+  </div>
+  <div class="grid2" style="margin-top:1.2em;">
+    <div class="card"><h4>浩辰 CAD 2026</h4><p>✅ 讀取 100% · 回存 100% · 性能三料冠軍 · 零崩潰<br>✅ 繁體界面（中文團隊可接受）<br>⚠️ 動態塊參數操作層建議人工抽檢</p></div>
+    <div class="card"><h4>中望 ZWCAD 2026</h4><p>✅ 讀取兼容優秀（實體逐張精確一致）· Xref 平滑<br>❌ 穩定性短板（打開 87.9%、間歇 RPC 崩潰）· 小圖打開異常慢 · 簡體界面</p></div>
+    <div class="card"><h4>AutoCAD 2025</h4><p>✅ 行業標準 · 打開最穩 · 天正生態<br>❌ 成本高 · 自動化回存 58% 失敗 · 大圖 REGEN 慢</p></div>
+    <div class="card"><h4>內部紀律</h4><p>不炸開天正實體/動態塊（炸開=永久失去參數化）；深化修改以標註/圖元級編輯爲主。</p></div>
+  </div>
+</section>
+
+<!-- ============ 9 附：交付物 ============ -->
+<section class="slide">
+  <h2>附：測試交付物</h2>
+  <table>
+    <tr><th>交付物</th><th>位置</th></tr>
+    <tr><td>綜合對比報告（數據+渲染+PDF+動態塊）</td><td>CADTest\results\FINAL-三款CAD對比測試報告.md</td></tr>
+    <tr><td>動態塊專項報告</td><td>CADTest\results\測試報告-動態塊保真專項.md</td></tr>
+    <tr><td>渲染逐圖報告（96 張 PNG 存檔）</td><td>CADTest\results\render-report-20260826-160741.md</td></tr>
+    <tr><td>調研文檔（第六~九節實測結論）</td><td>D:\Private\Memories\30_Resources\技術速查\國產CAD選型調研.md</td></tr>
+    <tr><td>知識庫筆記</td><td>DWG兼容性測試程序.md</td></tr>
+    <tr><td>測試程序（可複用）</td><td>main.py / render_test.py / dynblock_test.py（含斷點續跑、韌性運行器）</td></tr>
+  </table>
+  <div class="quote" style="margin-top:1.4em;">
+    <p style="font-size:1.15rem;color:#fbbf24;">總評：<b>"選浩辰"決策獲得數據層、渲染層、PDF 格式、動態塊四個維度的完整自動化實測支持。</b></p>
+    <p class="mini">—— 報告完 ——</p>
+  </div>
+</section>
+
+</div>
+<div class="pager" id="pager">1 / 9</div>
+<div class="nav">↑↓ 方向鍵 / 空格 / 滑鼠中鍵 / 點擊翻頁 · 雙擊全螢幕</div>
+<div class="btnbar">
+  <button class="navbtn" id="btnPrev">← 上一頁</button>
+  <button class="navbtn" id="btnNext">下一頁 →</button>
+</div>
+
+<script>
+(function(){
+  const slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  let idx = 0;
+  const pager = document.getElementById('pager');
+  function show(i){
+    idx = (i + slides.length) % slides.length;
+    slides.forEach((s,k)=>s.classList.toggle('active', k===idx));
+    pager.textContent = (idx+1) + ' / ' + slides.length;
+  }
+  function next(){ show(idx+1); }
+  function prev(){ show(idx-1); }
+  // 鍵盤：上下左右方向鍵 / 空格 / PageUp / PageDown
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); next(); }
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); prev(); }
+    else if(e.key==='Home'){ show(0); }
+    else if(e.key==='End'){ show(slides.length-1); }
+  });
+  // 滑鼠中鍵點擊翻頁（阻止預設自動捲動）
+  document.addEventListener('mousedown', function(e){
+    if(e.button===1){ e.preventDefault(); next(); }
+  });
+  // 點擊頁面翻頁
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.slide')) next();
+  });
+  // 上一頁/下一頁按鈕
+  document.getElementById('btnPrev').addEventListener('click', function(e){ e.stopPropagation(); prev(); });
+  document.getElementById('btnNext').addEventListener('click', function(e){ e.stopPropagation(); next(); });
+  // 雙擊全螢幕
+  document.addEventListener('dblclick', function(){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+    else document.exitFullscreen && document.exitFullscreen();
+  });
+  show(0);
+})();
+</script>
+</body>
+</html>
