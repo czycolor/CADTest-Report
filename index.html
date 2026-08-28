@@ -62,6 +62,7 @@
   }
   .navbtn:hover { background:rgba(56,189,248,.25); border-color:var(--accent); }
   .navbtn:active { transform:scale(.96); }
+  .navbtn:disabled { opacity:.35; cursor:default; transform:none; }
 </style>
 </head>
 <body>
@@ -223,10 +224,15 @@
   const slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   let idx = 0;
   const pager = document.getElementById('pager');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
   function show(i){
-    idx = (i + slides.length) % slides.length;
+    // 边界停止：第一页不再往前、最后一页不再往后（不循环）
+    idx = Math.max(0, Math.min(slides.length - 1, i));
     slides.forEach((s,k)=>s.classList.toggle('active', k===idx));
     pager.textContent = (idx+1) + ' / ' + slides.length;
+    btnPrev.disabled = (idx === 0);
+    btnNext.disabled = (idx === slides.length - 1);
   }
   function next(){ show(idx+1); }
   function prev(){ show(idx-1); }
