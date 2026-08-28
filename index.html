@@ -212,7 +212,7 @@
 
 </div>
 <div class="pager" id="pager">1 / 9</div>
-<div class="nav">↑↓ 方向鍵 / 空格 / 滑鼠中鍵 / 點擊翻頁 · 雙擊全螢幕</div>
+<div class="nav">↑↓ 方向鍵 / 空格 / 滾輪 / 滑鼠中鍵 / 點擊翻頁 · 雙擊全螢幕</div>
 <div class="btnbar">
   <button class="navbtn" id="btnPrev">← 上一頁</button>
   <button class="navbtn" id="btnNext">下一頁 →</button>
@@ -241,6 +241,16 @@
   document.addEventListener('mousedown', function(e){
     if(e.button===1){ e.preventDefault(); next(); }
   });
+  // 滑鼠滾輪翻頁（帶節流，避免一次滾動連續翻頁）
+  let wheelLock = false;
+  document.addEventListener('wheel', function(e){
+    e.preventDefault();
+    if(wheelLock) return;
+    wheelLock = true;
+    setTimeout(function(){ wheelLock = false; }, 450);
+    if(e.deltaY > 0) next();
+    else if(e.deltaY < 0) prev();
+  }, { passive: false });
   // 點擊頁面翻頁
   document.addEventListener('click', function(e){
     if(e.target.closest('.slide')) next();
