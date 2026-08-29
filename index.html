@@ -257,10 +257,6 @@
     if(e.deltaY > 0) next();
     else if(e.deltaY < 0) prev();
   }, { passive: false });
-  // 點擊頁面翻頁
-  document.addEventListener('click', function(e){
-    if(e.target.closest('.slide')) next();
-  });
   // 上一頁/下一頁按鈕
   document.getElementById('btnPrev').addEventListener('click', function(e){ e.stopPropagation(); prev(); });
   document.getElementById('btnNext').addEventListener('click', function(e){ e.stopPropagation(); next(); });
